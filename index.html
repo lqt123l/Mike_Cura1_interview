@@ -1,0 +1,115 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div class="gird"></div>
+        <div class="wrap">
+            <button class="closeBtn">X</button>
+            <div class="regularImg"></div>
+            <table class="imgInfo"></table>
+        </div>
+    </body>
+</html>
+<script>
+
+    $(document).ready(function(){   
+        
+        let gloImgList;
+        let screensize = document.documentElement.clientWidth;
+        
+        $.ajax({
+            type: 'get',
+            url: 'https://api.unsplash.com/photos',
+            headers: {
+                "Authorization":"Client-ID 043ab89faa81c9f193f2c297165e1c5931673a8e1ade4faf7e29579b588461bd"
+            },
+            success: function(imgList) { 
+                gloImgList = imgList;
+
+                imgList.map((imgObj)=>$(".gird")
+                    .append(`<img id="${imgObj.id}" class="image" src="${imgObj.urls.thumb}"></img>`)
+                );
+
+            },
+            async:false
+        });    
+        
+      $(".closeBtn").click(function(){
+          $(".wrap").css("display", "none");
+      });
+
+      $(".image").click(function(){
+          let selectedImgId = this.id;
+          let selectedImgObj = gloImgList.find((img)=>img.id === selectedImgId);
+          $('html,body').animate({scrollTop:0},'slow');
+          $(".wrap").css("display", "block");
+          $(".regularImg").html(`<img class="selectedImg" src="${selectedImgObj.urls.regular}"></img>`);
+
+          $(".imgInfo").html(`
+            <tr><td>Id: </td><td>${selectedImgObj.id}</td></tr>
+            <tr><td>Likes: </td><td>${selectedImgObj.likes}</td></tr>
+            <tr><td>User name: </td><td>${selectedImgObj.user.name}</td></tr>
+            <tr><td>User location: </td><td>${selectedImgObj.user.location}</td></tr>
+
+        `)
+      })
+        
+    });
+</script>
+<style>
+    *{
+        margin:0;
+        padding: 0;
+    }
+    .image{
+        display: inline-block;
+        height:200px;
+        width:auto;
+    }
+    .selectedImg{
+        height:80%;
+        width:auto;
+    }
+    .regularImg{
+        display: inline-block;
+    }
+    .imgInfo{
+        display: inline-block;
+        position:absolute;
+        top:10%;
+        margin-left:20px;
+        color:white;
+        font-size:20px;
+    }
+    .wrap{
+        display:none;
+        width:100%; 
+        height:100%;
+        position:absolute;
+        left: 0px;
+        top: 0px;
+        z-index:100; 
+        background-color: rgba(12,12,12,0.6);
+    }
+    .closeBtn{
+        position: absolute;
+        background-color:red;
+        color:white;
+        right:0px;
+        top:0px;
+        padding:8px 16px;
+        border:0;
+    }
+    
+    @media screen and (max-width: 400px) {
+        .image{
+            display: block;
+            height:auto;
+            width:100%;
+        }
+
+    }
+
+</style>
